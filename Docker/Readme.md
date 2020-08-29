@@ -31,5 +31,6 @@ Understanding how to use Docker is now a must have skills for students.
 
 
 [Training Play With Docker](https://training.play-with-docker.com/)
+
 [List of all the available Labs](https://training.play-with-docker.com/alacart/)
 
