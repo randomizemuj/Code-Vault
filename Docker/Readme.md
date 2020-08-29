@@ -25,7 +25,11 @@ Understanding how to use Docker is now a must have skills for students.
 
 ## Link for the Video
 
+[GettingTrained With PPT](https://www.youtube.com/watch?v=ccoLZ2zTB4U)
+
+## Docker Mini-Play Lab
+
+
 [Training Play With Docker](https://training.play-with-docker.com/)
 [List of all the available Labs](https://training.play-with-docker.com/alacart/)
 
-## Docker Mini-Play Lab
