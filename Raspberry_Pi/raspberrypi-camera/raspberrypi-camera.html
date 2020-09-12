@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title></title>
+    <meta charset="utf-8">
+    <style>
+      @import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+      @import url(https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic);
+      @import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
+
+      body { font-family: 'Droid Serif'; }
+      h1, h2, h3 {
+       font-family: 'Yanone Kaffeesatz';
+       font-weight: 400;
+       margin-bottom: 0;
+       margin-top: 10px;
+      }
+      h1 { font-size: 60px; }
+      h2 { font-size: 3em; }
+      h3 { font-size: 1.6em; }
+      .remark-slide-content { font-size: 30px; }
+      .remark-slide-number { font-size: 18px; }
+      li { padding: 4px; }
+      li li { font-size: 80%; }
+      .footnote{ font-size: 13px; left: 50px; bottom: 12px; position: absolute; }
+      .top-line{ left: 0px; top: 0px; width: 100%; height: 1em; position: absolute; background-color: #0000a0}
+      .remark-code, .remark-inline-code { font-family: 'Ubuntu Mono'; }
+      code { border-left: 6px solid orange; }
+      .left-column-70 {
+        width: 70%;
+        float: left;
+      }
+      .left-column-50 {
+        width: 50%;
+        float: left;
+      }
+      .right-column-30 {
+        width: 30%;
+        float: right;
+      }
+      .right-column-50 {
+        width: 50%;
+        float: right;
+      }
+      .right {
+        float: right;
+        margin-left: 1em;
+      }
+      strong {
+        color: red;
+      }
+      em {
+        color: darkblue;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        font-size: 70%;
+      }
+      th, td {
+        text-align: left;
+      }
+      tr:nth-child(even){background-color: #f2f2f2}
+      th {
+        background-color: #4CAF50;
+        color: white;
+      }
+      small {
+        font-size: 50%
+      }
+
+	  @page {
+		size: 1210px 681px;
+		margin: 0;
+	  }
+
+	  @media print {
+	    .remark-slide-scaler {
+		  width: 100% !important;
+		  height: 100% !important;
+		  transform: scale(1) !important;
+		  top: 0 !important;
+		  left: 0 !important;
+	    }
+	  }
+    </style>
+  </head>
+  <body>
+    <textarea id="source">
+layout: true
+.top-line[]
+
+---
+class: center, middle
+
+# Raspberry Pi Camera
+
+
+---
+## Raspberry Pi Camera
+* Raspberry Pi Camera Module
+* Python and picamera
+	- take still pictures
+	- record video
+	- image effects
+	
+.footnote[https://projects.raspberrypi.org/en/projects/getting-started-with-picamera]
+
+---
+## Camera Hardware
+* Connect the Camera Module to the Raspberry Pi  
+<img src="images/camera.png">  
+<img src="images/camera-connect.png">
+
+---
+## Enable Camera
+* Enable camera software & Reboot
+* $ sudo raspi-config  
+<img src="images/camera-enable.png">
+
+---
+## Still Picture
+* $ cat cam.py
+```python
+	from picamera import PiCamera
+	from time import sleep
+
+	camera = PiCamera()
+	# camera.start_preview()
+	sleep(1)
+	camera.capture('capture.jpg')
+	# camera.stop_preview()
+```
+* $ python3 cam.py
+	- capture.jpg
+* Preview only works when a monitor is connected to the Pi
+
+---
+## Get files
+* In Windows, you need pscp.exe (https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html)
+* pscp.exe   pi@192.168.0.53:/home/pi/capture.jpg   .
+<img src="images/pscp.png">
+* In Linux, use scp command
+
+---
+## Rotate Camera
+* camera.rotation = 180
+	- 0, 90, 180, 270
+
+---
+## Recording Video
+* $ cat record.py
+```python
+	from picamera import PiCamera
+	from time import sleep
+
+	camera = PiCamera()
+	camera.rotation = 180
+	#camera.start_preview()
+	camera.start_recording('recording.h264')
+	sleep(1)
+	camera.stop_recording()
+	#camera.stop_preview()
+```
+* $ python3 record.py
+	- recording.h264
+
+---
+## Effects
+```python
+camera.resolution = (2592, 1944)
+# maximum resolution is 2592 x 1944 for still photos and 1920 x 1080 for video recording
+camera.framerate = 15
+  
+camera.brightness = 70   # 0 ~ 100, The default is 50
+camera.contrast = 50    # 0 ~ 100, The default is 50
+  
+camera.awb_mode = 'sunlight'   # camera.AWB_MODES
+# off, auto, sunlight, cloudy, shade, tungsten, fluorescent, incandescent, flash, and horizon
+  
+camera.exposure_mode = 'beach'  # camera.EXPOSURE_MODES
+# off, auto, night, nightpreview, backlight, spotlight, sports, snow, beach, verylong, fixedfps,
+# antishake, and fireworks
+
+camera.annotate_text_size = 50 # 6 ~ 160. The default is 32.  
+camera.annotate_background = Color('blue')
+camera.annotate_foreground = Color('yellow')
+camera.annotate_text = " Hello world "
+  
+camera.image_effect = 'colorswap'  # camera.IMAGE_EFFECTS
+# none, negative, solarize, sketch, denoise, emboss, oilpaint, hatch, gpen, pastel, watercolor,
+# film, blur, saturation, colorswap, washedout, posterise, colorpoint, colorbalance, cartoon,
+# deinterlace1, and deinterlace2
+```
+
+---
+## Exercise
+* Take pictures with every exposure_mode and image_effect
+* Hint:
+```python
+	for effect in camera.IMAGE_EFFECTS:
+		camera.image_effect = effect
+		camera.annotate_text = "Effect: %s" % effect
+		sleep(5)
+```
+* Make a single titled image with the pictures
+* Hint:
+``` bash
+	$ sudo apt update
+	$ sudo apt install imagemagick
+	$ montage *.jpg -mode Concatenate -tile 6x5 montage.jpg
+```
+<img src="images/montage.jpg" style="position:absolute;bottom:50px;right:50px">
+    </textarea>
+    <!--<script src="https://gnab.github.io/remark/downloads/remark-latest.min.js"></script>-->
+    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/remark/0.14.0/remark.min.js"></script>-->
+	<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+    <script>
+        var slideshow = remark.create({
+          ratio: '16:9',
+          highlightStyle: 'github',
+          highlightLines: true
+        });
+    </script>
+    <!--<script src="https://cdn.rawgit.com/knsv/mermaid/6.0.0/dist/mermaid.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.rawgit.com/knsv/mermaid/6.0.0/dist/mermaid.css">
+    <script>mermaid.initialize({startOnLoad:true});</script>-->
+  </body>
+</html>
